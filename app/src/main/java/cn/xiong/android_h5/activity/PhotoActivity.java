@@ -10,8 +10,10 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -23,6 +25,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -33,11 +36,13 @@ import cn.xiong.android_h5.R;
 
 public class PhotoActivity extends AppCompatActivity {
 
-    private Button takePhoto,selectPhoto;
+    private Button takePhoto,selectPhoto,playMusic,playVideo,play,pause,stop;
     private ImageView photo;
     private Uri imageUri;
     private static final int TAKE_PHOTO = 1;
     private static final int SELECT_PHOTO = 2;
+    private LinearLayout music;
+    private MediaPlayer mediaPlayer = new MediaPlayer();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,12 @@ public class PhotoActivity extends AppCompatActivity {
         takePhoto = (Button) findViewById(R.id.photo_button);
         selectPhoto = (Button) findViewById(R.id.photo_select);
         photo = (ImageView) findViewById(R.id.photo_view);
+        playMusic = (Button) findViewById(R.id.play_music);
+        playVideo = (Button) findViewById(R.id.play_video);
+        play = (Button) findViewById(R.id.play);
+        pause = (Button) findViewById(R.id.pause);
+        stop = (Button) findViewById(R.id.stop);
+        music = (LinearLayout) findViewById(R.id.music_opera);
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +79,8 @@ public class PhotoActivity extends AppCompatActivity {
                 }else {
                     imageUri = Uri.fromFile(outputImage);
                 }
+                music.setVisibility(View.GONE);
+                photo.setVisibility(View.VISIBLE);
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
                 startActivityForResult(intent,TAKE_PHOTO);
@@ -80,7 +93,50 @@ public class PhotoActivity extends AppCompatActivity {
                 if(ContextCompat.checkSelfPermission(PhotoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                     ActivityCompat.requestPermissions(PhotoActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }else {
+                    music.setVisibility(View.GONE);
+                    photo.setVisibility(View.VISIBLE);
                     openAlbum();
+                }
+            }
+        });
+
+        playMusic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ContextCompat.checkSelfPermission(PhotoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(PhotoActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+                }else {
+                    music.setVisibility(View.VISIBLE);
+                    photo.setVisibility(View.GONE);
+                    initMediaPlayer();
+                }
+            }
+        });
+
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!mediaPlayer.isPlaying()){
+                    mediaPlayer.start();
+                }
+            }
+        });
+
+        pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.pause();
+                }
+            }
+        });
+
+        stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mediaPlayer.isPlaying()){
+                    mediaPlayer.reset();
+                    initMediaPlayer();
                 }
             }
         });
@@ -90,6 +146,16 @@ public class PhotoActivity extends AppCompatActivity {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
         startActivityForResult(intent,SELECT_PHOTO);
+    }
+
+    private void initMediaPlayer(){
+        File file = new File(Environment.getExternalStorageDirectory(),"1.mp3");
+        try {
+            mediaPlayer.setDataSource(file.getPath());
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -102,6 +168,13 @@ public class PhotoActivity extends AppCompatActivity {
                     Toast.makeText(this,"你拒绝了读取照片的权限",Toast.LENGTH_SHORT).show();
                 }
                 break;
+
+            case 2:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    music.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(this,"你拒绝了读取音乐的权限",Toast.LENGTH_SHORT).show();
+                }
 
             default:
         }
@@ -181,5 +254,14 @@ public class PhotoActivity extends AppCompatActivity {
             cursor.close();
         }
         return path;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mediaPlayer!=null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
     }
 }
