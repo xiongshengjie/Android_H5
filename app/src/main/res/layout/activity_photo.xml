@@ -43,7 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="播放视频"/>
+            android:text="下载文件"/>
 
     </LinearLayout>
 
@@ -73,6 +73,35 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="pause"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/download_oper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/start_download"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="开始下载"/>
+
+        <Button
+            android:id="@+id/pause_download"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="暂停下载"/>
+
+        <Button
+            android:id="@+id/cancel_download"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="取消下载"/>
 
     </LinearLayout>
 

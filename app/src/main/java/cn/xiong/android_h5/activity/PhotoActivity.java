@@ -3,8 +3,10 @@ package cn.xiong.android_h5.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -14,6 +16,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.IBinder;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -33,16 +36,32 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import cn.xiong.android_h5.R;
+import cn.xiong.android_h5.service.DownloadService;
 
 public class PhotoActivity extends AppCompatActivity {
 
-    private Button takePhoto,selectPhoto,playMusic,playVideo,play,pause,stop;
+    private Button takePhoto,selectPhoto,playMusic,playVideo,play,pause,stop,startDownload,pauseDownload,cancelDownload;
     private ImageView photo;
     private Uri imageUri;
     private static final int TAKE_PHOTO = 1;
     private static final int SELECT_PHOTO = 2;
-    private LinearLayout music;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private LinearLayout music,download;
+    private MediaPlayer mediaPlayer = null;
+    private DownloadService.DownloadBinder downloadBinder;
+
+    private ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            downloadBinder = (DownloadService.DownloadBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+
+        }
+    };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +82,11 @@ public class PhotoActivity extends AppCompatActivity {
         pause = (Button) findViewById(R.id.pause);
         stop = (Button) findViewById(R.id.stop);
         music = (LinearLayout) findViewById(R.id.music_opera);
+        download = (LinearLayout) findViewById(R.id.download_oper);
+        startDownload = (Button) findViewById(R.id.start_download);
+        pauseDownload = (Button) findViewById(R.id.pause_download);
+        cancelDownload = (Button) findViewById(R.id.cancel_download);
+
 
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +104,7 @@ public class PhotoActivity extends AppCompatActivity {
                     imageUri = Uri.fromFile(outputImage);
                 }
                 music.setVisibility(View.GONE);
+                download.setVisibility(View.GONE);
                 photo.setVisibility(View.VISIBLE);
                 Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                 intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
@@ -94,6 +119,7 @@ public class PhotoActivity extends AppCompatActivity {
                     ActivityCompat.requestPermissions(PhotoActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
                 }else {
                     music.setVisibility(View.GONE);
+                    download.setVisibility(View.GONE);
                     photo.setVisibility(View.VISIBLE);
                     openAlbum();
                 }
@@ -108,10 +134,26 @@ public class PhotoActivity extends AppCompatActivity {
                 }else {
                     music.setVisibility(View.VISIBLE);
                     photo.setVisibility(View.GONE);
+                    download.setVisibility(View.GONE);
                     initMediaPlayer();
                 }
             }
         });
+
+        playVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(PhotoActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(PhotoActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},3);
+                }else {
+                    music.setVisibility(View.GONE);
+                    photo.setVisibility(View.GONE);
+                    download.setVisibility(View.VISIBLE);
+                    prepareDownload();
+                }
+            }
+        });
+
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,10 +178,36 @@ public class PhotoActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.reset();
+                    mediaPlayer.release();
+                    mediaPlayer = null;
                     initMediaPlayer();
                 }
             }
         });
+
+        startDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String url = "http://imtt.dd.qq.com/16891/8E4AE33F7DD2BEDBFC251D447E77DF21.apk?fsname=com.wtdc.codebook_V2.0.0_17.apk&hsr=4d5s";
+                downloadBinder.startDownload(url);
+            }
+        });
+
+        pauseDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadBinder.pauseDownload();
+            }
+        });
+
+        cancelDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadBinder.cancelDownload();
+            }
+        });
+
+
     }
 
     private void openAlbum(){
@@ -148,8 +216,20 @@ public class PhotoActivity extends AppCompatActivity {
         startActivityForResult(intent,SELECT_PHOTO);
     }
 
+
+
+    private void prepareDownload(){
+        Intent intent = new Intent(this, DownloadService.class);
+        startService(intent);
+        bindService(intent,connection,BIND_AUTO_CREATE);
+    }
+
     private void initMediaPlayer(){
-        File file = new File(Environment.getExternalStorageDirectory(),"1.mp3");
+        if(mediaPlayer != null){
+            return;
+        }
+        mediaPlayer = new MediaPlayer();
+        File file = new File(Environment.getExternalStorageDirectory(),"Download/1.mp3");
         try {
             mediaPlayer.setDataSource(file.getPath());
             mediaPlayer.prepare();
@@ -174,6 +254,13 @@ public class PhotoActivity extends AppCompatActivity {
                     music.setVisibility(View.VISIBLE);
                 }else {
                     Toast.makeText(this,"你拒绝了读取音乐的权限",Toast.LENGTH_SHORT).show();
+                }
+
+            case 3:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    music.setVisibility(View.VISIBLE);
+                }else {
+                    Toast.makeText(this,"你拒绝了写入文件的权限",Toast.LENGTH_SHORT).show();
                 }
 
             default:
@@ -263,5 +350,6 @@ public class PhotoActivity extends AppCompatActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
+        unbindService(connection);
     }
 }
