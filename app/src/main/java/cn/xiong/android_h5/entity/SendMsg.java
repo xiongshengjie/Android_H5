@@ -10,7 +10,7 @@ public class SendMsg {
 
     private String info;
 
-    private String userid="xiongshengjie";
+    private String userid="xiong";
 
     private String loc;
 

@@ -221,4 +221,12 @@ public class ChatActivity extends AppCompatActivity implements AMapLocationListe
             }
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mLocationClient != null) {
+            mLocationClient.onDestroy();
+        }
+    }
 }
