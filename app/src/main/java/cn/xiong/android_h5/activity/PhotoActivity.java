@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -48,6 +49,7 @@ public class PhotoActivity extends AppCompatActivity {
     private LinearLayout music,download;
     private MediaPlayer mediaPlayer = null;
     private DownloadService.DownloadBinder downloadBinder;
+    private Boolean downloadFlag = false;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -68,6 +70,8 @@ public class PhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         initView();
     }
 
@@ -222,6 +226,8 @@ public class PhotoActivity extends AppCompatActivity {
         Intent intent = new Intent(this, DownloadService.class);
         startService(intent);
         bindService(intent,connection,BIND_AUTO_CREATE);
+        downloadFlag = true;
+
     }
 
     private void initMediaPlayer(){
@@ -350,6 +356,8 @@ public class PhotoActivity extends AppCompatActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
         }
-        unbindService(connection);
+        if(downloadFlag){
+            unbindService(connection);
+        }
     }
 }

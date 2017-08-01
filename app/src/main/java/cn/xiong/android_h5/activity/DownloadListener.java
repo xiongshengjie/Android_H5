@@ -14,6 +14,6 @@ public interface DownloadListener {
 
     void onPaused();
 
-    void onCanceled();
+    void onCanceled(String fileName);
 
 }

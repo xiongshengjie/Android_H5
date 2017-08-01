@@ -66,6 +66,7 @@ public class NewsTitleFragment extends Fragment {
     private NewsAdapter newsAdapter;
     private SwipeMenuRecyclerView newsTitleLyout;
     private boolean sIsScrolling;
+    private String type;
 
 
     public NewsTitleFragment() {
@@ -111,11 +112,13 @@ public class NewsTitleFragment extends Fragment {
                 SwipeMenuItem deleteItem = new SwipeMenuItem(getActivity())
                         .setBackgroundColor(R.color.black)
                         .setText("删除")
+                        .setTextSize(20)
                         .setHeight(height)
                         .setWidth(width);
                 SwipeMenuItem topItem = new SwipeMenuItem(getActivity())
                         .setBackgroundColor(R.color.white)
                         .setText("置顶")
+                        .setTextSize(20)
                         .setHeight(height)
                         .setWidth(width);
                 swipeRightMenu.addMenuItem(topItem);
@@ -191,8 +194,18 @@ public class NewsTitleFragment extends Fragment {
         return view;
     }
 
+    public void setType(String type) {
+        this.type = type;
+        getNews();
+        newsAdapter.notifyDataSetChanged();
+        newsTitleLyout.scrollToPosition(0);
+    }
+
     private void getNews(){
         RequestNews news = new RequestNews();
+        if(type != null){
+            news.setType(type);
+        }
         String json = gson.toJson(news);
         AI.postData(ServerUrl.NewsUrl+"?key="+news.getKey()+"&type="+news.getType(),new NewsCallBack(),json);
 
@@ -281,7 +294,6 @@ public class NewsTitleFragment extends Fragment {
                     .load(news.getThumbnail_pic_s())
                     .centerCrop()
                     .error(R.mipmap.ic_launcher)
-                    .transform(new GlideCircleTransform(getActivity()))
                     .animate(R.anim.little_to_large)
                     .into(holder.newsPic);
         }

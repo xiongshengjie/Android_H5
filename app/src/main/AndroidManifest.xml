@@ -44,23 +44,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.HelloActivity" />
-        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.HelloActivity"
+            android:label="计算器"/>
+        <activity android:name=".activity.AboutActivity"
+            android:label="关于"/>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="33fc36aa5793e3ed830ef7ac0a230893" />
 
-        <activity android:name=".activity.MapActivity" />
+        <activity android:name=".activity.MapActivity"
+            android:label="地图"/>
 
         <service android:name="com.amap.api.location.APSService" />
 
-        <activity android:name=".activity.ListViewActivity" />
-        <activity android:name=".activity.RccycleViewActivity" />
-        <activity android:name=".activity.ChatActivity" />
-        <activity android:name=".activity.NewsActivity" />
+        <activity android:name=".activity.ListViewActivity"
+            android:label="联系人"/>
+        <activity android:name=".activity.RccycleViewActivity"
+            android:label="瀑布布局"/>
+        <activity android:name=".activity.ChatActivity"
+            android:label="聊天"/>
+        <activity android:name=".activity.NewsActivity"
+            android:label="新闻"/>
         <activity android:name=".activity.NewsContentActivity" />
-        <activity android:name=".activity.PhotoActivity" />
+        <activity android:name=".activity.PhotoActivity"
+            android:label="多媒体"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -24,6 +24,7 @@ public class DownloadService extends Service {
 
     private DownloadTask downloadTask;
     private String downloadUrl;
+    private String fileName;
 
     private DownloadListener listener = new DownloadListener() {
         @Override
@@ -55,7 +56,8 @@ public class DownloadService extends Service {
         }
 
         @Override
-        public void onCanceled() {
+        public void onCanceled(String name) {
+            fileName = name;
             downloadTask = null;
             stopForeground(true);
             Toast.makeText(DownloadService.this,"取消下载",Toast.LENGTH_SHORT).show();
@@ -89,12 +91,6 @@ public class DownloadService extends Service {
                 downloadTask.cancelDownload();
             }else{
                 if(downloadUrl != null){
-                    String fileName = null;
-                    try {
-                        fileName = DownloadTask.getFilename(downloadUrl);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     String directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
                     File file = new File(directory + "/" + fileName);
                     if(file.exists()){

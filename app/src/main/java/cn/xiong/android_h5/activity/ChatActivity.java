@@ -6,12 +6,15 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -62,6 +65,12 @@ public class ChatActivity extends AppCompatActivity implements AMapLocationListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
         initLoc();
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         initMsg();
         initView();
@@ -220,6 +229,22 @@ public class ChatActivity extends AppCompatActivity implements AMapLocationListe
                 Toast.makeText(getApplicationContext(), "定位失败", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+            {
+                finish();
+            }
+                break;
+
+            default:
+                break;
+        }
+
+        return  true;
     }
 
     @Override

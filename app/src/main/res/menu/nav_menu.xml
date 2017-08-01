@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/top"
+            android:title="头条"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/sociaty"
+            android:title="社会"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/in"
+            android:title="国内"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/out"
+            android:title="国际"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/fun"
+            android:title="娱乐"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/sport"
+            android:title="体育"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/army"
+            android:title="军事"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/science"
+            android:title="科技"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/money"
+            android:title="财经"
+            android:icon="@mipmap/ic_launcher"/>
+        <item
+            android:id="@+id/fation"
+            android:title="时尚"
+            android:icon="@mipmap/ic_launcher"/>
+
+    </group>
+</menu>

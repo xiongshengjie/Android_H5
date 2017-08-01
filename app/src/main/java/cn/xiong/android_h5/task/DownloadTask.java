@@ -34,6 +34,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
     public static final int TYPE_CANCELED = 3;
 
     private DownloadListener listener;
+    private String fileName;
 
     private boolean isCanceled =  false;
     private boolean isPaused = false;
@@ -56,7 +57,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
         try {
             long downloadedLength = 0;
             String downloadUrl = params[0];
-            String fileName = getFilename(downloadUrl);
+            fileName = getFilename(downloadUrl);
             if(TextUtils.isEmpty(fileName)){
                 return TYPE_FAILED;
             }
@@ -148,7 +149,7 @@ public class DownloadTask extends AsyncTask<String, Integer, Integer> {
                 listener.onPaused();
                 break;
             case TYPE_CANCELED:
-                listener.onCanceled();
+                listener.onCanceled(fileName);
                 break;
             default:
                 break;
