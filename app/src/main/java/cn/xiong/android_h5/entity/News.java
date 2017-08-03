@@ -13,16 +13,18 @@ public class News implements Serializable{
     private String url;
     private String category;
     private String thumbnail_pic_s;
+    private String thumbnail_pic_s02;
 
     public News() {
     }
 
-    public News(String title, String date, String url, String category, String thumbnail_pic_s) {
+    public News(String title, String date, String url, String category, String thumbnail_pic_s,String thumbnail_pic_s02) {
         this.title = title;
         this.date = date;
         this.url = url;
         this.category = category;
         this.thumbnail_pic_s = thumbnail_pic_s;
+        this.thumbnail_pic_s02 = thumbnail_pic_s02;
     }
 
     public String getTitle() {
@@ -63,5 +65,13 @@ public class News implements Serializable{
 
     public void setThumbnail_pic_s(String thumbnail_pic_s) {
         this.thumbnail_pic_s = thumbnail_pic_s;
+    }
+
+    public String getThumbnail_pic_s02() {
+        return thumbnail_pic_s02;
+    }
+
+    public void setThumbnail_pic_s02(String thumbnail_pic_s02) {
+        this.thumbnail_pic_s02 = thumbnail_pic_s02;
     }
 }

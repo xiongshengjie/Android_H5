@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -65,6 +66,7 @@ public class NewsTitleFragment extends Fragment {
     private List<News> list = new ArrayList<News>();
     private NewsAdapter newsAdapter;
     private SwipeMenuRecyclerView newsTitleLyout;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private boolean sIsScrolling;
     private String type;
 
@@ -83,6 +85,15 @@ public class NewsTitleFragment extends Fragment {
         newsTitleLyout.setLayoutManager(linearLayoutManager);
         newsTitleLyout.addItemDecoration(new RecycleViewDivider(getActivity().getApplicationContext(), LinearLayoutManager.HORIZONTAL,2, ContextCompat.getColor(getActivity(),R.color.gray)));
         getNews();
+        swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swip_refresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getNews();
+                newsAdapter.notifyDataSetChanged();
+            }
+        });
         newsAdapter = new NewsAdapter(list);
         newsAdapter.setmOnItemClickListener(new onItemClickListener(){
 
@@ -315,6 +326,7 @@ public class NewsTitleFragment extends Fragment {
                 @Override
                 public void run() {
                     newsAdapter.setList(list);
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             });
         }

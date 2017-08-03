@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import cn.xiong.android_h5.R;
 import cn.xiong.android_h5.entity.News;
@@ -28,5 +29,17 @@ public class NewsContentActivity extends AppCompatActivity {
         bundle.putSerializable("news",news);
         intent.putExtras(bundle);
         context.startActivity(intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            default:
+                break;
+        }
+        return true;
     }
 }
